@@ -3,15 +3,14 @@ import 'package:line_icons/line_icons.dart';
 import 'package:sembako/components/ContainerAndButtons.dart';
 import 'package:sembako/components/Dialogs.dart';
 import 'package:sembako/other/const.dart';
-import 'package:sembako/pages/User/Keranjang.dart';
 
-class HomeUserPage extends StatefulWidget {
+class KeranjangPage extends StatefulWidget {
   @override
-  _HomeUserPageState createState() => _HomeUserPageState();
+  _KeranjangPageState createState() => _KeranjangPageState();
 }
 
-class _HomeUserPageState extends State<HomeUserPage> {
-  
+class _KeranjangPageState extends State<KeranjangPage> {
+
   int totalPesan = 1;
 
   @override
@@ -20,8 +19,30 @@ class _HomeUserPageState extends State<HomeUserPage> {
     totalPesan = 1;
   }
 
+  void hapusPesananSembako(int idBarang) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) => FunkyDialog(
+        Center(
+          child: Padding(padding: EdgeInsets.only(top: 15.0), child: Text('Yakin hapus pesanan?'),),
+        ),
+        Container(
+          padding: EdgeInsets.all(10.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: <Widget>[
+              FlatButton(onPressed: () => Navigator.pop(context), child: Text('Tidak')),
+              FlatButton(onPressed: () => Navigator.pop(context), child: Text('Ya', style: TextStyle(color: Colors.white),), color: Colors.red[300],),
+            ],
+          ),
+        ),
+        MainAxisSize.min
+      )
+    );
+  }
+
   bool showPesanBottomSheet = false;
-  bool menuOpened = false;
 
   @override
   Widget build(BuildContext context) {
@@ -36,40 +57,14 @@ class _HomeUserPageState extends State<HomeUserPage> {
                 children: <Widget>[
                   SafeArea(
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisAlignment: MainAxisAlignment.start,
                       children: <Widget>[
                         Row(
                           children: <Widget>[
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Const().accentColorLight,
-                                borderRadius: BorderRadius.circular(15.0)
-                              ),
-                              child: Material(
-                                color: Colors.transparent,
-                                child: InkWell(
-                                  onTap: () => Navigator.of(context).push(MaterialPageRoute(builder: (_) => KeranjangPage())),
-                                  borderRadius: BorderRadius.circular(25.0),
-                                  splashColor: Colors.black26,
-                                  child: Padding(
-                                    padding: EdgeInsets.fromLTRB(10.0, 5.0, 10.0, 5.0),
-                                    child: Row(
-                                      children: <Widget>[
-                                        Text('Barang di keranjang : 1', style: TextStyle(color: Colors.white),),
-                                        Icon(LineIcons.shopping_cart, color: Colors.white,)
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            IconButton(icon: Icon(Icons.dehaze), onPressed: () {
-                              setState(() {
-                                menuOpened = true;
-                              });
-                            })
+                            IconButton(icon: Icon(LineIcons.arrow_left), onPressed: () => Navigator.pop(context)),
+                            Text('Kembali')
                           ],
-                        )
+                        ),
                       ],
                     ),
                   ),
@@ -78,8 +73,46 @@ class _HomeUserPageState extends State<HomeUserPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text('Daftar Sembako', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Const().textColorDark),),
-                        Text('Lorem ipsum dolor sit amet', style: TextStyle(color: Const().textColorLight),),
+                        Text('Keranjang Sembako', style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold, color: Const().textColorDark),),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 5.0),
+                          child: Material(
+                            borderRadius: BorderRadius.circular(10.0),
+                            color: Const().accentColorLight,
+                            child: MaterialButton(
+                              minWidth: MediaQuery.of(context).size.width,
+                              padding: EdgeInsets.fromLTRB(20.0, 15.0, 20.0, 15.0),
+                              onPressed: () => showDialog(
+                                barrierDismissible: false,
+                                context: context,
+                                builder: (BuildContext context) => FunkyDialog(
+                                  Center(
+                                    child: Padding(padding: EdgeInsets.only(top: 15.0), child: Text('Proses pesan sembako sekarang?'),),
+                                  ),
+                                  Container(
+                                    padding: EdgeInsets.all(10.0),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: <Widget>[
+                                        FlatButton(onPressed: () => Navigator.pop(context), child: Text('Tidak')),
+                                        FlatButton(onPressed: () => Navigator.pop(context), child: Text('Ya')),
+                                      ],
+                                    ),
+                                  ),
+                                  MainAxisSize.min
+                                )
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: <Widget>[
+                                  Text('Proses Pesan',
+                                      textAlign: TextAlign.center,
+                                      style: TextStyle(fontFamily: 'Montserrat', fontSize: 15.0, color: Colors.white)),
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -90,53 +123,57 @@ class _HomeUserPageState extends State<HomeUserPage> {
                         padding: const EdgeInsets.fromLTRB(15.0, 15.0, 15.0, 0),
                         child: Column(
                           children: <Widget>[
-                            UserSembakoContainer(
-                              imageUrl: 'assets/png/beras.png',
-                              onTap: () {
+                            PesananSembakoContainer(
+                              onTapDelete: () => hapusPesananSembako(1),
+                              onTapEdit: (){
                                 setState(() {
                                   totalPesan = 1;
                                   showPesanBottomSheet = true;
                                 });
                               },
+                              imageUrl: 'assets/png/beras.png',
                               titleSembako: 'Beras C4 Super',
                               deskripsiSembako: '*deskripsi lorem ipsum dolor sit amet',
-                              stokSembako: 'Stok : 10',
+                              pesananSembako: 'Dipesan : 5',
                             ),
-                            UserSembakoContainer(
-                              imageUrl: 'assets/png/beras.png',
-                              onTap: () {
+                            PesananSembakoContainer(
+                              onTapDelete: () => hapusPesananSembako(1),
+                              onTapEdit: (){
                                 setState(() {
                                   totalPesan = 1;
                                   showPesanBottomSheet = true;
                                 });
                               },
+                              imageUrl: 'assets/png/beras.png',
                               titleSembako: 'Beras C4 Super',
                               deskripsiSembako: '*deskripsi lorem ipsum dolor sit amet',
-                              stokSembako: 'Stok : 10',
+                              pesananSembako: 'Dipesan : 5',
                             ),
-                            UserSembakoContainer(
-                              imageUrl: 'assets/png/beras.png',
-                              onTap: () {
+                            PesananSembakoContainer(
+                              onTapDelete: () => hapusPesananSembako(1),
+                              onTapEdit: (){
                                 setState(() {
                                   totalPesan = 1;
                                   showPesanBottomSheet = true;
                                 });
                               },
+                              imageUrl: 'assets/png/beras.png',
                               titleSembako: 'Beras C4 Super',
                               deskripsiSembako: '*deskripsi lorem ipsum dolor sit amet',
-                              stokSembako: 'Stok : 10',
+                              pesananSembako: 'Dipesan : 5',
                             ),
-                            UserSembakoContainer(
-                              imageUrl: 'assets/png/beras.png',
-                              onTap: () {
+                            PesananSembakoContainer(
+                              onTapDelete: () => hapusPesananSembako(1),
+                              onTapEdit: (){
                                 setState(() {
                                   totalPesan = 1;
                                   showPesanBottomSheet = true;
                                 });
                               },
+                              imageUrl: 'assets/png/beras.png',
                               titleSembako: 'Beras C4 Super',
                               deskripsiSembako: '*deskripsi lorem ipsum dolor sit amet',
-                              stokSembako: 'Stok : 10',
+                              pesananSembako: 'Dipesan : 5',
                             ),
                           ],
                         ),
@@ -250,85 +287,21 @@ class _HomeUserPageState extends State<HomeUserPage> {
               ],
             ),
           ) : Container(),
-          menuOpened ? Positioned.fill(
-            child: Column(
-              children: <Widget>[
-                Container(
-                  width: double.infinity,
-                  padding: EdgeInsets.all(15.0),
-                  color: Colors.white,
-                  child: SafeArea(
-                    child: Column(
-                      children: <Widget>[
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: (){},
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(10.0),
-                              child: Text('Edit KTP dan nomor HP'),
-                            ),
-                          ),
-                        ),
-                        Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: (){},
-                            child: Container(
-                              width: double.infinity,
-                              padding: EdgeInsets.all(10.0),
-                              child: Text('Riwayat pemesanan'),
-                            ),
-                          ),
-                        ),
-                        Row(
-                          mainAxisSize: MainAxisSize.max,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: <Widget>[
-                            Text('Tutup'),
-                            Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () => setState(() => menuOpened = false),
-                                borderRadius: BorderRadius.circular(25.0),
-                                child: Padding(
-                                  padding: EdgeInsets.all(5.0),
-                                  child: Icon(LineIcons.close),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: GestureDetector(
-                    onTap: () => setState(() => menuOpened = false),
-                    child: Container(
-                      color: Colors.black.withOpacity(0.6),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ) : Container()
         ],
-      ),
+      )
     );
   }
 }
 
-class UserSembakoContainer extends StatelessWidget {
-  UserSembakoContainer({this.onTap, this.imageUrl, this.titleSembako, this.deskripsiSembako, this.stokSembako});
+class PesananSembakoContainer extends StatelessWidget {
+  PesananSembakoContainer({this.onTapDelete, this.onTapEdit, this.imageUrl, this.titleSembako, this.deskripsiSembako, this.pesananSembako});
 
-  final VoidCallback onTap;
+  final VoidCallback onTapDelete;
+  final VoidCallback onTapEdit;
   final String imageUrl;
   final String titleSembako;
   final String deskripsiSembako;
-  final String stokSembako;
+  final String pesananSembako;
 
   @override
   Widget build(BuildContext context) {
@@ -372,32 +345,53 @@ class UserSembakoContainer extends StatelessWidget {
                             softWrap: true,
                             overflow: TextOverflow.ellipsis,
                           ),
-                        ],
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: <Widget>[
-                          Text(stokSembako),
-                          Container(
-                            decoration: BoxDecoration(
-                              color: Const().accentColorLight,
-                              borderRadius: BorderRadius.circular(5.0)
-                            ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                borderRadius: BorderRadius.circular(5.0),
-                                splashColor: Colors.black26,
-                                onTap: onTap,
-                                child: Padding(
-                                  padding: const EdgeInsets.all(5.0),
-                                  child: Text('Pesan', style: TextStyle(color: Colors.white),),
-                                )
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: <Widget>[
+                              Text(pesananSembako),
+                              Row(
+                                children: <Widget>[
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Colors.red[300],
+                                      borderRadius: BorderRadius.circular(25.0)
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: onTapDelete,
+                                        borderRadius: BorderRadius.circular(25.0),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(5.0),
+                                          child: Icon(LineIcons.trash, color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SizedBox(width: 5.0,),
+                                  Container(
+                                    decoration: BoxDecoration(
+                                      color: Const().accentColorLight,
+                                      borderRadius: BorderRadius.circular(25.0)
+                                    ),
+                                    child: Material(
+                                      color: Colors.transparent,
+                                      child: InkWell(
+                                        onTap: onTapEdit,
+                                        borderRadius: BorderRadius.circular(25.0),
+                                        child: Padding(
+                                          padding: EdgeInsets.all(5.0),
+                                          child: Icon(LineIcons.pencil, color: Colors.white),
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                ],
                               )
-                            ),
+                            ],
                           )
                         ],
-                      )
+                      ),
                     ],
                   ),
                 ),
